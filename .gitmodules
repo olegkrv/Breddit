@@ -1,0 +1,3 @@
+[submodule "src/main/java/com/example/Breddit"]
+	path = src/main/java/com/example/Breddit
+	url = https://github.com/olegkrv/BredditBack_Core

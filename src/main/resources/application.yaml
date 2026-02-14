@@ -1,0 +1,35 @@
+# spring.application.name=PetProject
+spring.http.encoding.charset: UTF-8
+spring.http.encoding.enabled: true
+spring.http.encoding.force: true
+
+# Настройка логов (если используете Logback)
+logging.charset.console: UTF-8
+spring.jvm.arguments: -Dfile.encoding=UTF-8
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hastur981@gmail.com
+    password: mxcj mnpz jlrg yoqi
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url: jdbc:postgresql://localhost:5433/Breddit
+    username: postgres
+    password: dlsocjmalocdmslojm
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
