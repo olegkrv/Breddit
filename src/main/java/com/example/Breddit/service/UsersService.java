@@ -21,7 +21,7 @@ import com.example.Breddit.repository.UserReposiotry;
 public interface UsersService{
     List<User> findAllUsers();
 
-    User saveUser(User user);
+    String saveUser(User user);
 
     User findUserbyId(Long id);
 
@@ -35,89 +35,18 @@ public interface UsersService{
 
     Code updateCode(Code code);
     
-    default Code generateCode(String email){
-        Code code = new Code();
-        code.generate(5);
-        do {
-            code.generate(5);
-        } while (saveCode(code) == null);
-        code.setUser_id(findUserbyEmail(email).getId());
-        updateCode(code);
-        return code;
-    }
+    Code generateCode(String email);
     
+    Code TwoFactorsAuth(String email,JavaMailSender sender);
 
+    String authUser(User user, User potetnial_user);
+
+    boolean verification(User user, String ur_code,Code this_code);
     
-    @Async
-    default Code TwoFactorsAuth(String email,JavaMailSender sender){
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setFrom("hastur981@gmail.com");
+    String logOut();
 
-        Code this_code = generateCode(email);
-        message.setText(this_code.getValue());
-        this_code.setActive(true);
-        updateCode(this_code);
-
-        message.setSubject("Breddit 2FA");
-        sender.send(message);
-        return this_code;
-    }
-
-
-
-    default String authUser(User user, CurrentUser CURRENT, User potetnial_user,JavaMailSender sender){
-
-        if (potetnial_user == null) return "Такой почты не существует";
-        
-        String ur_password = user.getPassword();
-
-        if (potetnial_user.getPassword().equals(ur_password) && ur_password != null){
-            TwoFactorsAuth(user.getEmail(),sender);
-            return "Мы выслали вам на почту проверочный код. Подтвердите, что это вы.";
-        }
-        return "Неверный пароль";
-    };
-
-
-
-
-    default boolean verification(User user, CurrentUser CURRENT, String ur_code,Code this_code){
-        if (this_code != null && this_code.getUser_id().equals(user.getId())&& this_code.getActive()){
-            CURRENT.setUser(user);
-            this_code.setActive(false);
-            updateCode(this_code);
-            return true;  
-        }
-            
-        return false;
-    }
-
-
-
-    default String logOut(CurrentUser CURRENT){
-        try {
-          CURRENT.logOut();
-        return "Вы успешно вышли из аккаунта!";  
-        }
-        catch (Exception e){
-            return "Что-то пошло не так: " + e;
-        }
-    }
-
-
-
-
-    default String makeAdmin(Long id, CurrentUser CURRENT){
-        if (CURRENT.getStatus().equals(2)){
-            User new_admin = findUserbyId(id);
-            new_admin.setStatus(1);
-            updateUser(new_admin);
-            return "".format("Теперь %s администратор Бреддита!", new_admin.getNickname());
-        }
-
-        return "У вас нет должности главного админа, чтобы сделать другого пользователя админом.";
-    }
+    String makeAdmin(Long id);
+   
 }
     
 

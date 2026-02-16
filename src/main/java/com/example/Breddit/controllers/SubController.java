@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Breddit.models.Sub;
-import com.example.Breddit.service.JPA.SubServiceJPA;
+import com.example.Breddit.service.SubService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class SubController {
-    private final SubServiceJPA service;
+    private final SubService service;
     private final UserController user_controller;
 
     @GetMapping

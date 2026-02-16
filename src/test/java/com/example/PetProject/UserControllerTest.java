@@ -20,7 +20,6 @@ import com.example.Breddit.repository.PostReposiroty;
 import com.example.Breddit.repository.SubRepository;
 import com.example.Breddit.repository.UserReposiotry;
 import com.example.Breddit.service.UsersService;
-import com.example.Breddit.service.JPA.UsersServiceJPA;
 
 import lombok.AllArgsConstructor;
 

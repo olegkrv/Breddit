@@ -13,74 +13,51 @@ import org.springframework.stereotype.Repository;
 
 import com.example.Breddit.models.User;
 //import com.example.Breddit.repository.NJO.UserNJO;
+import com.example.Breddit.repository.Interfaces.UserPreRepository;
 
 
 @Repository
 @RequiredArgsConstructor
-public class UserDAO {
-    private final List<User> WRITERS = new ArrayList<>();
-    //private UserNJO otherOperations;
+public class UserDAO implements UserPreRepository {
+    private final List<User> USERS = new ArrayList<>();
 
   
-    public List<User> findAllUsers(){
-        // System.out.println(WRITERS);
-        return WRITERS;
+    public List<User> findAll(){
+        return USERS;
     }
 
 
-    public User saveUser(User user){
+    public User save(User user){
         try {
-            
-        WRITERS.add(user);
+        int userIndex = IntStream.range(0, USERS.size()).
+        filter(element -> USERS.get(element).getId().equals(user.getId()))
+        .findFirst().orElse(-1);
+
+        if (userIndex > -1){
+            USERS.set(userIndex, user);
+            return user;
+        }
+  
+        USERS.add(user);
         return user;}
+
         catch (Exception exception) {return null;}
     }
 
-    public User findUserbyId(Long id){
-        return WRITERS.stream().filter(id1 -> id1.getId().equals(id)).findFirst().orElse(null);
+    public User findUserByid(Long id){
+        return USERS.stream().filter(id1 -> id1.getId().equals(id)).findFirst().orElse(null);
     }
 
-    /*public User findUserbyEmail(String email){
-        return WRITERS.stream().filter(email1 -> email1.getEmail().equals(email)).findFirst().orElse(null);
-    }*/
-
-
-    public User updateUser(User user){
-        // Мб нужно вернуть var
-        int userIndex = IntStream.range(0, WRITERS.size()).
-        filter(element -> WRITERS.get(element).getId().equals(user.getId()))
-        .findFirst().orElse(-1);
-        
-        if (userIndex > -1){
-            WRITERS.set(userIndex, user);
-            return user;
-        }
-
-        return null;
+    public User findUserByemail(String email){
+        return USERS.stream().filter(email1 -> email1.getEmail().equals(email)).findFirst().orElse(null);
     }
 
-    public boolean deleteUser(Long id){
-        var user = findUserbyId(id);
-        
-        if (user != null){
-            WRITERS.remove(user);
-            return true;
-        }
-        return false;
+
+    public void deleteByid(Long id){
+        var user = findUserByid(id);
+         
+        if (user != null) USERS.remove(user);
     }
-
-    /*ublic User addPosts(String email, ArrayList<String> adding_works){
-        User user = otherOperations.addPosts(email, adding_works);
-        if (user!= null) updateUser(user);
-        return user;
-    }
-
-    public User deletePosts(String email, ArrayList<String> deletable_works){
-        User user = otherOperations.deletePosts(email, deletable_works);
-        if (user!= null) updateUser(user);
-        return user;
-    }*/
-
-     
+  
 }
 

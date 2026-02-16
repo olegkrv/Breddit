@@ -1,4 +1,4 @@
-package com.example.Breddit.service.JPA;
+package com.example.Breddit.service.Impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -6,27 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Breddit.controllers.UserController;
-import com.example.Breddit.models.CurrentUser;
-import com.example.Breddit.models.Post;
 import com.example.Breddit.models.Sub;
 import com.example.Breddit.models.User;
 import com.example.Breddit.repository.PostReposiroty;
 import com.example.Breddit.repository.SubRepository;
+import com.example.Breddit.repository.Interfaces.SubPreRepository;
 import com.example.Breddit.service.SubService;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
-@Primary
-public class SubServiceJPA implements SubService{
-    private final SubRepository repository; 
+@AllArgsConstructor
+public class SubServiceImpl implements SubService{
+    private final SubPreRepository repository; 
     private final PostReposiroty post_repository;
     private final UserController user_controller;
 

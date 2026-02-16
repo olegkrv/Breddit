@@ -23,9 +23,9 @@ import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import com.example.Breddit.models.Post;
 import com.example.Breddit.models.Sub;
 import com.example.Breddit.models.User;
+import com.example.Breddit.service.PostService;
 import com.example.Breddit.service.SubService;
 import com.example.Breddit.service.UsersService;
-import com.example.Breddit.service.JPA.PostServiceJPA;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,11 +35,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class PostController {
-    private final PostServiceJPA service;
+    private final PostService service;
     private final SubService sub_service;
 
     private final UserController user_controller;
-    // private final UsersService user_service;
 
     @GetMapping("/posts")
     public List<Post> findAllPosts(){
