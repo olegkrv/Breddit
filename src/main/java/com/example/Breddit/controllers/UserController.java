@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class UserController{
-    // @NonNull List<User>
     public CurrentUser CURRENT = new CurrentUser();
     public boolean two_fa_passed = false;
     private final UsersService service;
@@ -48,12 +47,7 @@ public class UserController{
 
     @PostMapping("/save_user")
     public String saveUser(@RequestBody User user){
-        if (service.findUserbyEmail(user.getEmail()) == null){
-            service.saveUser(user);
-            service.TwoFactorsAuth(user.getEmail(),sender);
-            return "Мы выслали вам на почту проверочный код. Подтвердите, что это вы.";}
-        else  if (two_fa_passed) return "".format("Добро пожаловать, %s", CURRENT.getNickname());
-        return "Эта почта уже используется!";
+        return service.saveUser(user);
         
     }
 
@@ -70,8 +64,7 @@ public class UserController{
 
     @DeleteMapping("/delete_user")
     public String deleteUser(){
-        System.out.println(CURRENT.getId() + "==" + !(CURRENT.getAdmined_subs().isEmpty()) + "==" + CURRENT.getAdmined_subs());
-        if (CURRENT.getId() !=null && !(CURRENT.getAdmined_subs().isEmpty())) {
+       if (CURRENT.getId() !=null && !(CURRENT.getAdmined_subs().isEmpty())) {
             
             String message = "Вы не уможете удалить свой аккаунт, так как являетесь главным админом в следующих Саббреддитах:";
             for (Long sub_id: CURRENT.getAdmined_subs()){
@@ -93,13 +86,13 @@ public class UserController{
     @PostMapping("/authorization")
     public String authUser(@RequestBody User user){
         if (two_fa_passed) return "".format("Рады видеть вас снова, %s", CURRENT.getNickname());
-        return service.authUser(user, CURRENT, service.findUserbyEmail(user.getEmail()), sender);
+        return service.authUser(user,service.findUserbyEmail(user.getEmail()));
     }
 
     @PostMapping("/2fa/{code}")
     public String verification(@RequestBody User user, @PathVariable String code){
         if (CURRENT.getStatus().equals(-1)) return "Вы забанены.";
-        two_fa_passed = service.verification(service.findUserbyEmail(user.getEmail()), CURRENT, code, code_repository.findByvalue(code));
+        two_fa_passed = service.verification(service.findUserbyEmail(user.getEmail()), code, code_repository.findByvalue(code));
         if (two_fa_passed){
             return "Успешно";
         }
@@ -109,12 +102,12 @@ public class UserController{
     @GetMapping("/logout")
     public String logOut(){
         two_fa_passed = false;
-        return service.logOut(CURRENT);
+        return service.logOut();
     }
 
 
     @PostMapping("/make_admin/{id}")
     public String makeAdmin(@PathVariable Long id){
-        return service.makeAdmin(id, CURRENT);
+        return service.makeAdmin(id);
     }
 }

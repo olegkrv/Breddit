@@ -1,31 +1,28 @@
-package com.example.Breddit.service.JPA;
+package com.example.Breddit.service.Impl;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.usertype.UserCollectionType;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.example.Breddit.controllers.UserController;
-import com.example.Breddit.models.CurrentUser;
 import com.example.Breddit.models.Post;
 import com.example.Breddit.models.Sub;
 import com.example.Breddit.models.User;
 import com.example.Breddit.repository.PostReposiroty;
+import com.example.Breddit.repository.Interfaces.PostPreRepository;
 import com.example.Breddit.service.PostService;
+import com.example.Breddit.service.SubService;
+import com.example.Breddit.service.UsersService;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
-@Primary
-public class PostServiceJPA implements PostService{
-    private final PostReposiroty reposiroty;
-    private final UsersServiceJPA user_service;
-    private final SubServiceJPA sub_service;
+@AllArgsConstructor
+public class PostServiceImpl implements PostService{
+    private final PostPreRepository reposiroty;
+    private final UsersService user_service;
+    private final SubServiceImpl sub_service;
     private final UserController user_controller;
 
     @Override
