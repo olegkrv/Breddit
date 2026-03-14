@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.annotation.Scope;
+
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import lombok.Setter;
 //@Entity
 @Setter
 @Getter
+@Scope("session")
 public class CurrentUser extends UserTemplate{
     private Long id;
     public CurrentUser(){super();}

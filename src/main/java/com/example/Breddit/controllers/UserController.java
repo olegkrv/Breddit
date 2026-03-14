@@ -47,7 +47,12 @@ public class UserController{
 
     @PostMapping("/save_user")
     public String saveUser(@RequestBody User user){
-        return service.saveUser(user);
+        if (service.findUserbyEmail(user.getEmail()) == null){
+           service.saveUser(user);
+           service.TwoFactorsAuth(user.getEmail(),sender);
+           return "Мы выслали вам на почту проверочный код. Подтвердите, что это вы.";}
+        else  if (two_fa_passed) return "".format("Добро пожаловать, %s", CURRENT.getNickname());
+        return "Эта почта уже используется!";
         
     }
 
@@ -92,7 +97,7 @@ public class UserController{
     @PostMapping("/2fa/{code}")
     public String verification(@RequestBody User user, @PathVariable String code){
         if (CURRENT.getStatus().equals(-1)) return "Вы забанены.";
-        two_fa_passed = service.verification(service.findUserbyEmail(user.getEmail()), code, code_repository.findByvalue(code));
+        two_fa_passed = service.verification(service.findUserbyEmail(user.getEmail()), code, code_repository.findByvalue(code),CURRENT);
         if (two_fa_passed){
             return "Успешно";
         }
@@ -102,12 +107,12 @@ public class UserController{
     @GetMapping("/logout")
     public String logOut(){
         two_fa_passed = false;
-        return service.logOut();
+        return service.logOut(CURRENT);
     }
 
 
     @PostMapping("/make_admin/{id}")
     public String makeAdmin(@PathVariable Long id){
-        return service.makeAdmin(id);
+        return service.makeAdmin(id,CURRENT);
     }
 }

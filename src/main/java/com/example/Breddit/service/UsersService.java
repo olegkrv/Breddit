@@ -21,7 +21,7 @@ import com.example.Breddit.repository.UserReposiotry;
 public interface UsersService{
     List<User> findAllUsers();
 
-    String saveUser(User user);
+    User saveUser(User user);
 
     User findUserbyId(Long id);
 
@@ -41,11 +41,11 @@ public interface UsersService{
 
     String authUser(User user, User potetnial_user);
 
-    boolean verification(User user, String ur_code,Code this_code);
+    boolean verification(User user, String ur_code,Code this_code, CurrentUser CURRENT);
     
-    String logOut();
+    String logOut(CurrentUser CURRENT);
 
-    String makeAdmin(Long id);
+    String makeAdmin(Long id, CurrentUser CURRENT);
    
 }
     

@@ -23,9 +23,9 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
-public abstract class UserServiceImpl implements UsersService{
-     public CurrentUser CURRENT = new CurrentUser();
-    public boolean two_fa_passed = false;
+public class UserServiceImpl implements UsersService{
+     //public CurrentUser CURRENT = new CurrentUser();
+    //public boolean two_fa_passed = false;
     private final SubRepository sub_repository;
     private final CodeRepository code_repository;
     private UserPreRepository repository;
@@ -41,13 +41,12 @@ public abstract class UserServiceImpl implements UsersService{
         //return repository.findAll();
     }
 
-    public String saveUser(User user){
-        if (findUserbyEmail(user.getEmail()) == null){
-           repository.save(user);
-           TwoFactorsAuth(user.getEmail(),sender);
-           return "Мы выслали вам на почту проверочный код. Подтвердите, что это вы.";}
-        else  if (two_fa_passed) return "".format("Добро пожаловать, %s", CURRENT.getNickname());
-        return "Эта почта уже используется!";
+    public User saveUser(User user){
+        try{System.out.println(user);
+            return repository.save(user);}
+        catch (Exception exception) {
+            System.out.println(exception);
+            return null;}
     }
 
     public User findUserbyEmail(String email){
@@ -141,7 +140,7 @@ public abstract class UserServiceImpl implements UsersService{
 
 
 
-    public boolean verification(User user, String ur_code,Code this_code){
+    public boolean verification(User user, String ur_code,Code this_code, CurrentUser CURRENT){
         if (this_code != null && this_code.getUser_id().equals(user.getId())&& this_code.getActive()){
             CURRENT.setUser(user);
             this_code.setActive(false);
@@ -154,7 +153,7 @@ public abstract class UserServiceImpl implements UsersService{
 
 
 
-    public String logOut(){
+    public String logOut(CurrentUser CURRENT){
         try {
           CURRENT.logOut();
         return "Вы успешно вышли из аккаунта!";  
@@ -167,7 +166,7 @@ public abstract class UserServiceImpl implements UsersService{
 
 
 
-    public String makeAdmin(Long id){
+    public String makeAdmin(Long id,  CurrentUser CURRENT){
         if (CURRENT.getStatus().equals(2)){
             User new_admin = findUserbyId(id);
             new_admin.setStatus(1);
