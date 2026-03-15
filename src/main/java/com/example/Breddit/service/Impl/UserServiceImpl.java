@@ -16,6 +16,8 @@ import com.example.Breddit.repository.CodeRepository;
 import com.example.Breddit.repository.PostReposiroty;
 import com.example.Breddit.repository.SubRepository;
 import com.example.Breddit.repository.UserReposiotry;
+import com.example.Breddit.repository.Interfaces.PostPreRepository;
+import com.example.Breddit.repository.Interfaces.SubPreRepository;
 import com.example.Breddit.repository.Interfaces.UserPreRepository;
 import com.example.Breddit.service.UsersService;
 
@@ -26,10 +28,10 @@ import lombok.AllArgsConstructor;
 public class UserServiceImpl implements UsersService{
      //public CurrentUser CURRENT = new CurrentUser();
     //public boolean two_fa_passed = false;
-    private final SubRepository sub_repository;
+    private final SubPreRepository sub_repository;
     private final CodeRepository code_repository;
     private UserPreRepository repository;
-    private final PostReposiroty post_repository;
+    private final PostPreRepository post_repository;
 
 
     @Autowired
