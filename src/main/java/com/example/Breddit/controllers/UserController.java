@@ -51,7 +51,11 @@ public class UserController{
            service.saveUser(user);
            service.TwoFactorsAuth(user.getEmail(),sender);
            return "Мы выслали вам на почту проверочный код. Подтвердите, что это вы.";}
-        else  if (two_fa_passed) return "".format("Добро пожаловать, %s", CURRENT.getNickname());
+        else  if (two_fa_passed) {
+            
+            return "".format("Добро пожаловать, %s", CURRENT.getNickname());
+        }
+        //else if (!(two_fa_passed) && (user.getEmail() == null)) return "Вы ввели неверный код, попробуйте ещё раз.";
         return "Эта почта уже используется!";
         
     }

@@ -40,10 +40,10 @@ public class User extends UserTemplate{
         Field[] my_fields = self.getSuperclass().getDeclaredFields(); 
 
 
-
-        for (int i=0; i<my_fields.length; i++){ 
+        for (int i=0; i<fields.length; i++){ 
             Field my_field = my_fields[i];
             Object other_field = fields[i];
+            System.out.println("my_field: " + my_field + "i: " + i);
             if (Modifier.isStatic(my_field.getModifiers())) {
                     continue;
                 }
@@ -65,9 +65,13 @@ public class User extends UserTemplate{
         catch (IllegalArgumentException iae){
             System.err.println("ОШИБКА ТИПОВ: " + my_field.getName() + 
                        " ожидал " + my_field.getType().getSimpleName() + 
-                       ", но получил " + other_field.getClass().getSimpleName());
+                       ", но получил " + other_field.getClass().getSimpleName() + " от поля " + other_field);
     
-        }       
+        }
+        
+        catch (ArrayIndexOutOfBoundsException aio){
+            System.err.println("fields: "+fields + " field: " + other_field + "i: " + i);
+        }
     
     }
     Field my_field = null;

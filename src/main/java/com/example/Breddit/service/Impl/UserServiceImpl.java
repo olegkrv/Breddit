@@ -28,10 +28,12 @@ import lombok.AllArgsConstructor;
 public class UserServiceImpl implements UsersService{
      //public CurrentUser CURRENT = new CurrentUser();
     //public boolean two_fa_passed = false;
-    private final SubPreRepository sub_repository;
-    private final CodeRepository code_repository;
     private UserPreRepository repository;
+    private final CodeRepository code_repository;
+    
     private final PostPreRepository post_repository;
+    private final SubPreRepository sub_repository;
+    
 
 
     @Autowired
