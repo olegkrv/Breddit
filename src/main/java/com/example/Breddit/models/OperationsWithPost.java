@@ -9,7 +9,7 @@ import lombok.Setter;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class OperationsWithPost {
+public abstract class OperationsWithPost  extends AnyEntity{
     private ArrayList<Long> posts = new ArrayList<Long>();
     
     public void addPost(Long id){

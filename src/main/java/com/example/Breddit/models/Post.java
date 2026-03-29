@@ -15,7 +15,7 @@ import lombok.NonNull;
 @Data
 @Entity
 @Table(name = "Breddit Posts")
-public class Post {
+public class Post{
     public Post() {super();}
 
     @Id
@@ -27,6 +27,12 @@ public class Post {
     private Long author;
     private Long sub_id;
     private Instant date;
+
+    public Post(String title, String description){
+        this.title = title;
+        this.description = description;
+    }
+
 }
 
 

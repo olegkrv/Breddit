@@ -24,4 +24,9 @@ public class Sub extends OperationsWithPost{
     private ArrayList<Long> posts = new ArrayList<Long>();
     private Long main_admin; 
     private ArrayList<Long> admins = new ArrayList<Long>();
+
+    public void Sub(String title, String description){
+        this.title = title;
+        this.description = description;
+    }
 }

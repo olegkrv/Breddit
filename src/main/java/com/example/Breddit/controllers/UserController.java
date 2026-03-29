@@ -23,6 +23,7 @@ import com.example.Breddit.repository.CodeRepository;
 import com.example.Breddit.repository.SubRepository;
 import com.example.Breddit.service.UsersService;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 //import com.example.Breddit.BredditApplication;;
 
@@ -32,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 public class UserController{
     public CurrentUser CURRENT = new CurrentUser();
-    public boolean two_fa_passed = false;
     private final UsersService service;
     private final SubRepository sub_repository;
     private final CodeRepository code_repository;
@@ -42,27 +42,26 @@ public class UserController{
 
     @GetMapping
     public List<User> findAllUsers(){
-        return service.findAllUsers();
+        if (CURRENT.getStatus() > 0)return service.findAllUsers();
+        return null;
     }
 
     @PostMapping("/save_user")
     public String saveUser(@RequestBody User user){
-        if (service.findUserbyEmail(user.getEmail()) == null){
-           service.saveUser(user);
+        if ((service.findUserbyEmail(user.getEmail()) == null) &&(!(CURRENT.isPassed()))){
            service.TwoFactorsAuth(user.getEmail(),sender);
            return "Мы выслали вам на почту проверочный код. Подтвердите, что это вы.";}
-        else  if (two_fa_passed) {
-            
+        else  if (CURRENT.isPassed()) {
+            service.saveUser(user);
             return "".format("Добро пожаловать, %s", CURRENT.getNickname());
         }
-        //else if (!(two_fa_passed) && (user.getEmail() == null)) return "Вы ввели неверный код, попробуйте ещё раз.";
         return "Эта почта уже используется!";
         
     }
 
     @GetMapping("/{id}")
     public User findUserbyId(@PathVariable Long id){
-        if (CURRENT.getStatus().equals(1)) return service.findUserbyId(id);
+        if (CURRENT.getStatus() > 0) return service.findUserbyId(id);
         return null;
     }
 
@@ -94,23 +93,23 @@ public class UserController{
 
     @PostMapping("/authorization")
     public String authUser(@RequestBody User user){
-        if (two_fa_passed) return "".format("Рады видеть вас снова, %s", CURRENT.getNickname());
+        if (CURRENT.isPassed()) return "".format("Рады видеть вас снова, %s", CURRENT.getNickname());
         return service.authUser(user,service.findUserbyEmail(user.getEmail()));
     }
 
     @PostMapping("/2fa/{code}")
     public String verification(@RequestBody User user, @PathVariable String code){
-        if (CURRENT.getStatus().equals(-1)) return "Вы забанены.";
-        two_fa_passed = service.verification(service.findUserbyEmail(user.getEmail()), code, code_repository.findByvalue(code),CURRENT);
-        if (two_fa_passed){
-            return "Успешно";
+        //if (user.getStatus() ==-1) return "Вы забанены.";
+        CURRENT.setPassed(service.verification(user, code, code_repository.findByvalue(code),CURRENT));
+        if (CURRENT.isPassed()){
+            return "Успешно"; 
         }
         return "Неверный код!";
     }
 
     @GetMapping("/logout")
     public String logOut(){
-        two_fa_passed = false;
+        CURRENT.setPassed(false);
         return service.logOut(CURRENT);
     }
 

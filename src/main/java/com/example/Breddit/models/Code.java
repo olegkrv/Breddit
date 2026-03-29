@@ -17,13 +17,19 @@ import lombok.Data;
 public class Code {
     public Code(){
         this.id = null;
-        this.user_id = null;
+        this.uemail = null;
+    }
+
+    public Code(String value){
+        this.id = null;
+        this.uemail = null;
+        this.value = value;
     }
 
     @Id
     @GeneratedValue
     private final Long id;
-    private Long user_id;
+    private String uemail; //user_email, сокращение было добавлено для корректной работы репозитория
     private boolean active = false;
 
     public boolean getActive(){

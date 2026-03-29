@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Scope;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,10 +18,13 @@ import lombok.Setter;
 @Scope("session")
 public class CurrentUser extends UserTemplate{
     private Long id;
+    private boolean passed = false;
+
     public CurrentUser(){super();}
 
     public void setUser(User user) throws IllegalAccessError{
         setId(user.getId());
+        setPosts(user.getPosts());
 
         Class<?> this_user = user.getClass();
         Class<?> self = this.getClass();
@@ -115,6 +119,10 @@ public class CurrentUser extends UserTemplate{
 
         catch (IllegalAccessException ill){
             System.out.println("Ошибка доступа: " + ill);
+        }
+        catch (NullPointerException npe){
+
+            System.out.println("Объект не существует: " + npe);
         }
     }
         return data;

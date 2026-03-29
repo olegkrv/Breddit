@@ -14,8 +14,10 @@ import com.example.Breddit.models.Sub;
 import com.example.Breddit.models.User;
 import com.example.Breddit.repository.PostReposiroty;
 import com.example.Breddit.repository.SubRepository;
+import com.example.Breddit.repository.Interfaces.PostPreRepository;
 import com.example.Breddit.repository.Interfaces.SubPreRepository;
 import com.example.Breddit.service.SubService;
+import com.example.Breddit.service.UsersService;
 
 import lombok.AllArgsConstructor;
 
@@ -23,8 +25,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SubServiceImpl implements SubService{
     private final SubPreRepository repository; 
-    private final PostReposiroty post_repository;
+    private final PostPreRepository post_repository;
     private final UserController user_controller;
+    private final UsersService user_service;
 
     @Override
     public List<Sub> findAllSubs(){
@@ -38,15 +41,14 @@ public class SubServiceImpl implements SubService{
             Long new_main_admin = user_controller.CURRENT.getId();
 
             new_sub.setMain_admin(new_main_admin);
-            User admining = user_controller.findUserbyId(new_main_admin);
+            User admining = user_service.findUserbyId(new_main_admin);
             admining.addAdminedSub(new_sub.getId());
             user_controller.CURRENT.addAdminedSub(new_sub.getId());
-            user_controller.updateUser(admining);
+            user_service.updateUser(admining);
             repository.save(new_sub);
 
             new_main_admin = null;
             admining = null;
-            System.out.println(new_sub);
             return new_sub;
         }
         catch (Exception exception) {
@@ -89,7 +91,6 @@ public class SubServiceImpl implements SubService{
                 System.out.println("Ошибка доступа: " + ill);
             }
         }
-        System.out.println(sub);
         return repository.save(sub);
     }
 
@@ -110,14 +111,17 @@ public class SubServiceImpl implements SubService{
     public boolean deleteSub(Long id){
         if (repository.findByid(id) != null) {
             for (Long post: repository.findByid(id).getPosts()) {
-                user_controller.findUserbyId(post_repository.findByid(post).getAuthor()).deletePost(post);
-                post_repository.deleteByid(post);}
+                user_service.findUserbyId(post_repository.findByid(post).getAuthor()).deletePost(post);
+                post_repository.deleteByid(post);
+            }
             
-            User main_admin = user_controller.findUserbyId(repository.findByid(id).getMain_admin());
+            User main_admin = user_service.findUserbyId(repository.findByid(id).getMain_admin());
+            
             main_admin.deleteAdminedSub(id);
-            user_controller.updateUser(main_admin);
-            user_controller.CURRENT.deleteAdminedSub(id);
-            repository.deleteByid(id); 
+            user_service.updateUser(main_admin);
+
+            user_controller.CURRENT.setUser(main_admin);
+            repository.deleteByid(id);  
             return true;
         }
         return false;
@@ -150,13 +154,13 @@ public class SubServiceImpl implements SubService{
 
         
         user_controller.CURRENT.deleteAdminedSub(sub_id);
-        User current = user_controller.findUserbyId(user_controller.CURRENT.getId());
+        User current = user_service.findUserbyId(user_controller.CURRENT.getId());
         current.deleteAdminedSub(sub_id);
-        user_controller.updateUser(current);
+        user_service.updateUser(current);
 
-        User new_main_admin = user_controller.findUserbyId(user_id);
+        User new_main_admin = user_service.findUserbyId(user_id);
         new_main_admin.addAdminedSub(sub_id);
-        user_controller.updateUser(new_main_admin);
+        user_service.updateUser(new_main_admin);
 
         repository.save(this_sub);
         this_sub = null;

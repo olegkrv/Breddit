@@ -10,4 +10,6 @@ import com.example.Breddit.models.Code;
 @Repository
 public interface CodeRepository extends JpaRepository<Code, String> {
     public Code findByvalue(String value);
+
+    public Code findByuemail(String email);
 }

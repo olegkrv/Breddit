@@ -37,8 +37,16 @@ public abstract class UserTemplate extends OperationsWithPost{
     
 
     public int getAge() {
+        if (date_of_birth == null) return -1;
         return Period.between(date_of_birth, LocalDate.now()).getYears();
      }
+
+    public int getStatus(){
+        if (this.status == null){
+            return 0;
+        }
+        return this.status;
+    }
     
     private ArrayList<Long> admined_subs = new ArrayList<Long>();
     

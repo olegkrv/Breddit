@@ -48,12 +48,14 @@ public class PostController {
     @PostMapping("{title}/add_post")
     public String addPost(@RequestBody Post post, @PathVariable String title){
         try{
-           if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+           if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
            if (title == null) return "Вы не выбрали Саббреддит!";
            else if (sub_service.findByTitle(title) == null) return "Такого Саббреддита не существует!"; 
            if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы сделать пост!";
-           
+        
+        else if ( (post.getTitle() == null)) return "Заголовок не может быть пустым!";
+        
         else if (post.getTitle().split(" ").length == 0 || post.getTitle().equals("")) return "Заголовок не может быть пустым!";
         
         service.addPost(post, title);
@@ -67,20 +69,20 @@ public class PostController {
 
     @PutMapping("/update_post")
     public Post updatePost(@RequestBody Post post){
-        if (user_controller.CURRENT.getStatus().equals(-1)) return null; 
+        if (user_controller.CURRENT.getStatus() == -1) return null; 
         return service.updatePost(post);
     }
 
     @GetMapping("{title}/{id}")
     public Post findById(@PathVariable Long id){
-        if (user_controller.CURRENT.getStatus().equals(-1)) return null; 
+        if (user_controller.CURRENT.getStatus() == -1) return null; 
         return service.findById(id);
     }
 
     @Transactional
     @DeleteMapping("delete_post/{id}")
     public String deletePost(@PathVariable Long id){
-        if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+        if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
         if (service.findById(id) != null) {
             if (user_controller.CURRENT.getId() == null) return "Вы даже не авторизовались!";

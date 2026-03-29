@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 public class PostServiceImpl implements PostService{
     private final PostPreRepository reposiroty;
     private final UsersService user_service;
-    private final SubServiceImpl sub_service;
+    private final SubService sub_service;
     private final UserController user_controller;
 
     @Override
@@ -68,6 +68,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public boolean deletePost(Long id){
         try{
+            if (reposiroty.findByid(id) == null) return false;
            user_service.findUserbyId(reposiroty.findByid(id).getAuthor()).deletePost(id);
            sub_service.findById(reposiroty.findByid(id).getSub_id()).deletePost(id);
         reposiroty.deleteByid(id);

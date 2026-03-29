@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 @Service
 public class UserServiceImpl implements UsersService{
      //public CurrentUser CURRENT = new CurrentUser();
-    //public boolean two_fa_passed = false;
+    //public boolean CURRENT.isPassed() = false;
     private UserPreRepository repository;
     private final CodeRepository code_repository;
     
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UsersService{
         do {
             code.generate(5);
         } while (saveCode(code) == null);
-        code.setUser_id(findUserbyEmail(email).getId());
+        code.setUemail(email);
         updateCode(code);
         return code;
     }
@@ -145,7 +145,7 @@ public class UserServiceImpl implements UsersService{
 
 
     public boolean verification(User user, String ur_code,Code this_code, CurrentUser CURRENT){
-        if (this_code != null && this_code.getUser_id().equals(user.getId())&& this_code.getActive()){
+        if (this_code != null && this_code.getUemail().equals(user.getEmail())&& this_code.getActive()){
             CURRENT.setUser(user);
             this_code.setActive(false);
             updateCode(this_code);
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UsersService{
 
 
     public String makeAdmin(Long id,  CurrentUser CURRENT){
-        if (CURRENT.getStatus().equals(2)){
+        if (CURRENT.getStatus() == 2){
             User new_admin = findUserbyId(id);
             new_admin.setStatus(1);
             updateUser(new_admin);

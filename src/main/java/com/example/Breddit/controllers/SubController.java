@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Breddit.models.Sub;
 import com.example.Breddit.service.SubService;
+import com.example.Breddit.service.UsersService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class SubController {
     private final SubService service;
     private final UserController user_controller;
+    private final UsersService user_service;
 
     @GetMapping
     public List<Sub> findAllSubs(){
@@ -42,8 +44,10 @@ public class SubController {
 
            if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы создать саббреддит!";
         
-        else if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
-           
+        else if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
+        
+        else if (sub.getTitle() == null) return "Название саббреддита не может быть пустым!";
+
         else if (sub.getTitle().split(" ").length == 0 || sub.getTitle().equals("")) return "Название саббреддита не может быть пустым!";
         
         else if (!(sub.getTitle().matches("^[a-zA-Z0-9]+$"))) return "Можно использовать только латинские буквы!";
@@ -60,7 +64,7 @@ public class SubController {
     public String updateSub(@PathVariable Long id, @RequestBody Map<String, String> updating){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы обновить саббреддит!";
 
-        else if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+        else if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
         else if (service.findById(id) == null) return "Саббреддита с таким id не существует!";
 
@@ -71,8 +75,8 @@ public class SubController {
     }
 
     @GetMapping("/{title}")
-    public Sub findById(@PathVariable String title){
-        if (user_controller.CURRENT.getStatus().equals(-1)) return null; 
+    public Sub findByTitle(@PathVariable String title){
+        if (user_controller.CURRENT.getStatus() == -1) return null; 
         return service.findByTitle(title);
     }
 
@@ -80,7 +84,7 @@ public class SubController {
     public String deleteSub(@PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы удалить саббреддит!";
 
-        else if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+        else if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
         else if (service.findById(id) == null) return "Саббреддита с таким id не существует!";
 
@@ -94,36 +98,43 @@ public class SubController {
     public String addAdmin(@PathVariable String title, @PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы добавить нового админа Саббреддита!";
 
-        else if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+        else if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
         else if (!(user_controller.CURRENT.getId().equals(service.findByTitle(title).getMain_admin()))) return "У вас нет прав главного администратора, чтобы добавить нового админа Саббреддита!";
 
+        else if (user_service.findUserbyId(id) == null) return "Пользователя с таким id не существует!";
+
         service.addAdmin(service.findByTitle(title).getId(), id);
-        return "".format("Теперь %s часть команды.", user_controller.findUserbyId(id).getNickname());
+        return "".format("Теперь %s часть команды.", user_service.findUserbyId(id).getNickname());
     }
 
     @DeleteMapping("/{title}/remove_admin/{id}")
     public String removeAdmin(@PathVariable String title, @PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы удалить админа Саббреддита!";
 
-        else if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+        else if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
         else if (!(user_controller.CURRENT.getId().equals(service.findByTitle(title).getMain_admin()))) return "У вас нет прав главного администратора, чтобы удалить админа Саббреддита!";
 
+        else if (user_service.findUserbyId(id) == null) return "Пользователя с таким id не существует!";
+
+        else if (!(service.findByTitle(title).getAdmins().contains(id))) return  "".format("Не знал этот Саббредит таких админов, как %s.", user_service.findUserbyId(id).getNickname());
         service.removeAdmin(service.findByTitle(title).getId(), id);
-        return "".format("Теперь %s изгнан из вышего уютного уголка.", user_controller.findUserbyId(id).getNickname());
+        return "".format("Теперь %s изгнан из вышего уютного уголка.", user_service.findUserbyId(id).getNickname());
     }
 
     @PutMapping("/{title}/transfer/{id}")
     public String transferCrown(@PathVariable String title, @PathVariable Long id){
         if (user_controller.CURRENT.getId() == null) return "Необходимо войти в аккаунт, чтобы передать права главного админа Саббреддита!";
 
-        else if (user_controller.CURRENT.getStatus().equals(-1)) return "Вы забанены."; 
+        else if (user_controller.CURRENT.getStatus() == -1) return "Вы забанены."; 
 
         else if (!(user_controller.CURRENT.getId().equals(service.findByTitle(title).getMain_admin()))) return "У вас нет прав главного администратора, чтобы передать права на этот Саббреддит!";
         
+        else if (user_service.findUserbyId(id) == null) return "Пользователя с таким id не существует!";
+        
         service.transferCrown(service.findByTitle(title).getId(), id);
-        return "".format("Теперь %s хозяин сея Саббреддита.", user_controller.findUserbyId(id).getNickname());
+        return "".format("Теперь %s хозяин сея Саббреддита.", user_service.findUserbyId(id).getNickname());
     }
 
     
